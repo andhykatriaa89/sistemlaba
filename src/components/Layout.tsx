@@ -19,42 +19,42 @@ export default function Layout({ children, activeView, onViewChange }: LayoutPro
             <LayoutDashboard size={24} />
           </div>
           <div>
-            <h2 className="text-lg font-black text-on-surface tracking-tight">Growth SME</h2>
+            <h2 className="text-lg font-black text-on-surface tracking-tight">Sistem Laba Laba</h2>
             <p className="text-[10px] uppercase tracking-widest text-secondary font-bold">Premium Tier</p>
           </div>
         </div>
 
         <nav className="flex-1 space-y-1">
-          <NavItem 
-            icon={<LayoutDashboard size={20} />} 
-            label="Dashboard" 
-            active={activeView === 'home'} 
-            onClick={() => onViewChange('home')} 
+          <NavItem
+            icon={<LayoutDashboard size={20} />}
+            label="Dashboard"
+            active={activeView === 'home'}
+            onClick={() => onViewChange('home')}
           />
-          <NavItem 
-            icon={<PlusCircle size={20} />} 
-            label="Input Transaksi" 
-            active={activeView === 'input'} 
-            onClick={() => onViewChange('input')} 
+          <NavItem
+            icon={<PlusCircle size={20} />}
+            label="Input Transaksi"
+            active={activeView === 'input'}
+            onClick={() => onViewChange('input')}
           />
-          <NavItem 
-            icon={<Calculator size={20} />} 
-            label="Kalkulator Profit" 
-            active={activeView === 'calculator'} 
-            onClick={() => onViewChange('calculator')} 
+          <NavItem
+            icon={<Calculator size={20} />}
+            label="Kalkulator Profit"
+            active={activeView === 'calculator'}
+            onClick={() => onViewChange('calculator')}
           />
-          <NavItem 
-            icon={<BarChart3 size={20} />} 
-            label="Laporan Keuangan" 
-            active={activeView === 'reports'} 
-            onClick={() => onViewChange('reports')} 
+          <NavItem
+            icon={<BarChart3 size={20} />}
+            label="Laporan Keuangan"
+            active={activeView === 'reports'}
+            onClick={() => onViewChange('reports')}
           />
         </nav>
 
         <div className="mt-auto p-4 bg-primary/5 rounded-2xl border border-primary/10">
           <p className="text-xs text-secondary mb-3">Maximize your potential with data insights.</p>
           <button className="w-full signature-gradient text-white py-2.5 rounded-xl text-sm font-bold shadow-md hover:opacity-90 transition-all">
-            Upgrade Plan
+            Upgrade Plan : 085158811702 Contact Info
           </button>
         </div>
       </aside>
@@ -67,7 +67,7 @@ export default function Layout({ children, activeView, onViewChange }: LayoutPro
             <div className="md:hidden w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
               PL
             </div>
-            <h1 className="text-lg font-bold tracking-tight">Profit Ledger</h1>
+            <h1 className="text-lg font-bold tracking-tight">Sistem Laba</h1>
           </div>
 
           <div className="flex items-center gap-4">
@@ -80,13 +80,13 @@ export default function Layout({ children, activeView, onViewChange }: LayoutPro
             </button>
             <div className="flex items-center gap-3 pl-2 border-l border-slate-100">
               <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden border border-slate-100">
-                <img 
-                  src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" 
-                  alt="User" 
+                <img
+                  src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                  alt="User"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <span className="hidden sm:block text-sm font-semibold">Budi Santoso</span>
+              <span className="hidden sm:block text-sm font-semibold">User</span>
             </div>
           </div>
         </header>
@@ -99,29 +99,29 @@ export default function Layout({ children, activeView, onViewChange }: LayoutPro
         {/* Mobile Bottom Nav */}
         <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-2xl border-t border-slate-100 px-4 pb-6 pt-3">
           <div className="flex justify-around items-center max-w-md mx-auto">
-            <MobileNavItem 
-              icon={<LayoutDashboard size={20} />} 
-              label="Home" 
-              active={activeView === 'home'} 
-              onClick={() => onViewChange('home')} 
+            <MobileNavItem
+              icon={<LayoutDashboard size={20} />}
+              label="Home"
+              active={activeView === 'home'}
+              onClick={() => onViewChange('home')}
             />
-            <MobileNavItem 
-              icon={<PlusCircle size={20} />} 
-              label="Input" 
-              active={activeView === 'input'} 
-              onClick={() => onViewChange('input')} 
+            <MobileNavItem
+              icon={<PlusCircle size={20} />}
+              label="Input"
+              active={activeView === 'input'}
+              onClick={() => onViewChange('input')}
             />
-            <MobileNavItem 
-              icon={<Calculator size={20} />} 
-              label="Calc" 
-              active={activeView === 'calculator'} 
-              onClick={() => onViewChange('calculator')} 
+            <MobileNavItem
+              icon={<Calculator size={20} />}
+              label="Calc"
+              active={activeView === 'calculator'}
+              onClick={() => onViewChange('calculator')}
             />
-            <MobileNavItem 
-              icon={<BarChart3 size={20} />} 
-              label="Reports" 
-              active={activeView === 'reports'} 
-              onClick={() => onViewChange('reports')} 
+            <MobileNavItem
+              icon={<BarChart3 size={20} />}
+              label="Reports"
+              active={activeView === 'reports'}
+              onClick={() => onViewChange('reports')}
             />
           </div>
         </nav>
@@ -136,8 +136,8 @@ function NavItem({ icon, label, active, onClick }: { icon: React.ReactNode, labe
       onClick={onClick}
       className={cn(
         "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200",
-        active 
-          ? "bg-primary text-white shadow-lg shadow-primary/20" 
+        active
+          ? "bg-primary text-white shadow-lg shadow-primary/20"
           : "text-secondary hover:bg-primary/5 hover:text-primary"
       )}
     >
@@ -156,7 +156,7 @@ function MobileNavItem({ icon, label, active, onClick }: { icon: React.ReactNode
         active ? "text-primary bg-primary/5" : "text-secondary"
       )}
     >
-      {React.cloneElement(icon as React.ReactElement, { 
+      {React.cloneElement(icon as React.ReactElement<React.SVGProps<SVGSVGElement>>, {
         fill: active ? "currentColor" : "none",
         strokeWidth: active ? 2.5 : 2
       })}

@@ -175,7 +175,7 @@ export default function ProfitCalculator() {
                     </p>
                   </div>
                 </div>
-                <span className="text-xs font-bold text-slate-500">Asumsi {formatIDR(estimasiPenjualan)} Unit Terjual</span>
+                <span className="text-xs font-bold text-slate-500">Asumsi {formatIDR(numEstimasiPenjualan)} Unit Terjual</span>
               </div>
             </div>
 
