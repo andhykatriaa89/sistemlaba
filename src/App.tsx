@@ -89,7 +89,7 @@ export default function App() {
   const renderView = () => {
     switch (activeView) {
       case 'home':
-        return <Dashboard transactions={transactions} summary={summary} />;
+        return <Dashboard transactions={transactions} summary={summary} onNavigate={setActiveView} />;
       case 'input':
         return <InputExpense onSubmit={handleSubmit} loading={loading} initialTransactions={transactions} />;
       case 'calculator':
@@ -97,7 +97,7 @@ export default function App() {
       case 'reports':
         return <Reports transactions={transactions} summary={summary} />;
       default:
-        return <Dashboard transactions={transactions} summary={summary} />;
+        return <Dashboard transactions={transactions} summary={summary} onNavigate={setActiveView} />;
     }
   };
 

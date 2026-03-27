@@ -7,9 +7,10 @@ import { Transaction, FinancialSummary } from '../types';
 interface DashboardProps {
   transactions: Transaction[];
   summary: FinancialSummary;
+  onNavigate?: (view: 'calculator') => void;
 }
 
-export default function Dashboard({ transactions, summary }: DashboardProps) {
+export default function Dashboard({ transactions, summary, onNavigate }: DashboardProps) {
   const latestTransactions = transactions.slice(0, 3);
   const currentDate = new Date().toLocaleDateString('id-ID', {
     day: 'numeric',
@@ -164,7 +165,10 @@ export default function Dashboard({ transactions, summary }: DashboardProps) {
         <div className="relative z-10 max-w-md space-y-4">
           <h4 className="text-xl font-black tracking-tight">Butuh Bantuan Kalkulasi?</h4>
           <p className="text-sm text-slate-400 font-medium leading-relaxed">Gunakan Kalkulator Profit cerdas kami untuk mensimulasikan kenaikan harga bahan baku terhadap margin keuntungan Anda.</p>
-          <button className="bg-primary text-white px-8 py-3 rounded-2xl text-sm font-black shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all uppercase tracking-widest">
+          <button 
+            onClick={() => onNavigate && onNavigate('calculator')}
+            className="bg-primary text-white px-8 py-3 rounded-2xl text-sm font-black shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all uppercase tracking-widest"
+          >
             Buka Kalkulator
           </button>
         </div>

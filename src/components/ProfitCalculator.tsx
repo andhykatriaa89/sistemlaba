@@ -5,6 +5,22 @@ import { cn } from '../lib/utils';
 
 export default function ProfitCalculator() {
   const [margin, setMargin] = useState(35);
+  const [biayaProduksi, setBiayaProduksi] = useState(45000);
+  const [biayaTetap, setBiayaTetap] = useState(2500000);
+
+  // Dynamic calculations
+  const marginDecimal = margin / 100;
+  // Ensure we don't divide by 0 if margin is 100%
+  const divisor = 1 - marginDecimal || 0.01; 
+  const hargaJual = Math.round(biayaProduksi / divisor);
+  const profitPerUnit = hargaJual - biayaProduksi;
+  const roi = biayaProduksi > 0 ? Math.round((profitPerUnit / biayaProduksi) * 100) : 0;
+  const breakEven = profitPerUnit > 0 ? Math.ceil(biayaTetap / profitPerUnit) : 0;
+
+  const harga20 = Math.round(biayaProduksi / (1 - 0.20));
+  const harga50 = Math.round(biayaProduksi / (1 - 0.50));
+
+  const formatIDR = (num: number) => num.toLocaleString('id-ID');
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-12">
@@ -35,7 +51,8 @@ export default function ProfitCalculator() {
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-on-surface">Rp</span>
                   <input 
                     type="number" 
-                    defaultValue={45000}
+                    value={biayaProduksi}
+                    onChange={(e) => setBiayaProduksi(Number(e.target.value))}
                     className="w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all font-bold text-lg"
                   />
                 </div>
@@ -46,7 +63,8 @@ export default function ProfitCalculator() {
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-on-surface">Rp</span>
                   <input 
                     type="number" 
-                    defaultValue={2500000}
+                    value={biayaTetap}
+                    onChange={(e) => setBiayaTetap(Number(e.target.value))}
                     className="w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all font-bold text-lg"
                   />
                 </div>
@@ -97,7 +115,7 @@ export default function ProfitCalculator() {
           >
             <div className="mb-10">
               <p className="text-[10px] font-bold uppercase tracking-widest text-primary mb-1">Rekomendasi Harga Jual</p>
-              <h3 className="text-5xl font-black tracking-tighter">Rp69.230</h3>
+              <h3 className="text-5xl font-black tracking-tighter">Rp{formatIDR(hargaJual)}</h3>
             </div>
 
             <div className="space-y-6">
@@ -108,10 +126,10 @@ export default function ProfitCalculator() {
                   </div>
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-secondary">Profit / Unit</p>
-                    <p className="font-bold">Rp24.230</p>
+                    <p className="font-bold">Rp{formatIDR(profitPerUnit)}</p>
                   </div>
                 </div>
-                <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded-md">+54% ROI</span>
+                <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded-md">+{roi}% ROI</span>
               </div>
 
               <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
@@ -121,7 +139,7 @@ export default function ProfitCalculator() {
                   </div>
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-secondary">Break-even Point</p>
-                    <p className="font-bold">104 Unit</p>
+                    <p className="font-bold">{formatIDR(breakEven)} Unit</p>
                   </div>
                 </div>
                 <span className="text-xs font-bold text-tertiary">Target Bulanan</span>
@@ -140,11 +158,11 @@ export default function ProfitCalculator() {
             <div className="space-y-4">
               <div className="flex justify-between items-center text-sm">
                 <span className="font-medium">Margin 20% (Standard)</span>
-                <span className="font-bold">Rp56.250</span>
+                <span className="font-bold">Rp{formatIDR(harga20)}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="font-medium">Margin 50% (Premium)</span>
-                <span className="font-bold text-primary">Rp90.000</span>
+                <span className="font-bold text-primary">Rp{formatIDR(harga50)}</span>
               </div>
             </div>
           </div>
