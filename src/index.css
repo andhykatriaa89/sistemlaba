@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #006948;
+  --color-on-primary: #ffffff;
+  --color-secondary: #6b7280;
+  --color-tertiary: #ef4444;
+  --color-surface: #ffffff;
+  --color-surface-container-low: #f9fafb;
+  --color-on-surface: #0b1c30;
+  --color-background: #f8fafc;
+}
+
+body {
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.signature-gradient {
+  background: linear-gradient(135deg, #006948 0%, #004d35 100%);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
