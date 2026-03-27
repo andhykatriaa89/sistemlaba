@@ -1,24 +1,30 @@
 import { useState } from 'react';
-import { Calculator as CalcIcon, TrendingUp, Flag, Lightbulb, ArrowRight } from 'lucide-react';
+import { Calculator as CalcIcon, TrendingUp, Flag, Lightbulb, ArrowRight, Wallet } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
 
 export default function ProfitCalculator() {
   const [margin, setMargin] = useState(35);
-  const [biayaProduksi, setBiayaProduksi] = useState(45000);
-  const [biayaTetap, setBiayaTetap] = useState(2500000);
+  const [biayaProduksi, setBiayaProduksi] = useState<number | string>(45000);
+  const [biayaTetap, setBiayaTetap] = useState<number | string>(2500000);
+  const [estimasiPenjualan, setEstimasiPenjualan] = useState<number | string>(300);
 
   // Dynamic calculations
+  const numBiayaProduksi = Number(biayaProduksi) || 0;
+  const numBiayaTetap = Number(biayaTetap) || 0;
+  const numEstimasiPenjualan = Number(estimasiPenjualan) || 0;
+
   const marginDecimal = margin / 100;
   // Ensure we don't divide by 0 if margin is 100%
-  const divisor = 1 - marginDecimal || 0.01; 
-  const hargaJual = Math.round(biayaProduksi / divisor);
-  const profitPerUnit = hargaJual - biayaProduksi;
-  const roi = biayaProduksi > 0 ? Math.round((profitPerUnit / biayaProduksi) * 100) : 0;
-  const breakEven = profitPerUnit > 0 ? Math.ceil(biayaTetap / profitPerUnit) : 0;
+  const divisor = 1 - marginDecimal || 0.01;
+  const hargaJual = Math.round(numBiayaProduksi / divisor);
+  const profitPerUnit = hargaJual - numBiayaProduksi;
+  const roi = numBiayaProduksi > 0 ? Math.round((profitPerUnit / numBiayaProduksi) * 100) : 0;
+  const breakEven = profitPerUnit > 0 ? Math.ceil(numBiayaTetap / profitPerUnit) : 0;
+  const profitBulanan = (profitPerUnit * numEstimasiPenjualan) - numBiayaTetap;
 
-  const harga20 = Math.round(biayaProduksi / (1 - 0.20));
-  const harga50 = Math.round(biayaProduksi / (1 - 0.50));
+  const harga20 = Math.round(numBiayaProduksi / (1 - 0.20));
+  const harga50 = Math.round(numBiayaProduksi / (1 - 0.50));
 
   const formatIDR = (num: number) => num.toLocaleString('id-ID');
 
@@ -34,7 +40,7 @@ export default function ProfitCalculator() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         {/* Left: Inputs */}
         <div className="lg:col-span-7 space-y-8">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-8"
@@ -49,10 +55,10 @@ export default function ProfitCalculator() {
                 <label className="text-[10px] font-bold uppercase tracking-widest text-secondary block">Biaya Produksi / Unit</label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-on-surface">Rp</span>
-                  <input 
-                    type="number" 
+                  <input
+                    type="number"
                     value={biayaProduksi}
-                    onChange={(e) => setBiayaProduksi(Number(e.target.value))}
+                    onChange={(e) => setBiayaProduksi(e.target.value === '' ? '' : Number(e.target.value))}
                     className="w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all font-bold text-lg"
                   />
                 </div>
@@ -61,10 +67,22 @@ export default function ProfitCalculator() {
                 <label className="text-[10px] font-bold uppercase tracking-widest text-secondary block">Biaya Tetap (Bln)</label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-on-surface">Rp</span>
-                  <input 
-                    type="number" 
+                  <input
+                    type="number"
                     value={biayaTetap}
-                    onChange={(e) => setBiayaTetap(Number(e.target.value))}
+                    onChange={(e) => setBiayaTetap(e.target.value === '' ? '' : Number(e.target.value))}
+                    className="w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all font-bold text-lg"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-secondary block">Estimasi Penjualan (Unit/Bulan)</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-on-surface">📦</span>
+                  <input
+                    type="number"
+                    value={estimasiPenjualan}
+                    onChange={(e) => setEstimasiPenjualan(e.target.value === '' ? '' : Number(e.target.value))}
                     className="w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all font-bold text-lg"
                   />
                 </div>
@@ -76,10 +94,10 @@ export default function ProfitCalculator() {
                 <label className="text-[10px] font-bold uppercase tracking-widest text-secondary">Target Margin Keuntungan</label>
                 <span className="text-2xl font-black text-primary">{margin}%</span>
               </div>
-              <input 
-                type="range" 
-                min="5" 
-                max="80" 
+              <input
+                type="range"
+                min="5"
+                max="80"
                 value={margin}
                 onChange={(e) => setMargin(parseInt(e.target.value))}
                 className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary"
@@ -108,7 +126,7 @@ export default function ProfitCalculator() {
 
         {/* Right: Results */}
         <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
-          <motion.section 
+          <motion.section
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             className="bg-white p-8 rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-50 relative overflow-hidden"
@@ -142,7 +160,22 @@ export default function ProfitCalculator() {
                     <p className="font-bold">{formatIDR(breakEven)} Unit</p>
                   </div>
                 </div>
-                <span className="text-xs font-bold text-tertiary">Target Bulanan</span>
+                <span className="text-xs font-bold text-tertiary">Target Minimal</span>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
+                <div className="flex items-center gap-3">
+                  <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", profitBulanan >= 0 ? "bg-green-500/10 text-green-600" : "bg-red-500/10 text-red-600")}>
+                    <Wallet size={20} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-secondary">Potensi Profit Bulanan</p>
+                    <p className={cn("font-bold text-lg tracking-tight", profitBulanan >= 0 ? "text-green-600" : "text-red-500")}>
+                      {profitBulanan < 0 ? "-" : ""}Rp{formatIDR(Math.abs(profitBulanan))}
+                    </p>
+                  </div>
+                </div>
+                <span className="text-xs font-bold text-slate-500">Asumsi {formatIDR(estimasiPenjualan)} Unit Terjual</span>
               </div>
             </div>
 
