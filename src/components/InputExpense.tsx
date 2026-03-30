@@ -46,7 +46,8 @@ export default function InputExpense({ onSubmit, loading, initialTransactions }:
         </div>
       </div>
 
-      <motion.div 
+      <motion.form 
+        onSubmit={handleSubmit}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-6"
@@ -76,6 +77,7 @@ export default function InputExpense({ onSubmit, loading, initialTransactions }:
             value={nama}
             onChange={(e) => setNama(e.target.value)}
             className="w-full bg-slate-50 border-none rounded-xl py-4 px-4 focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all font-medium text-on-surface outline-none"
+            required
           />
         </div>
 
@@ -111,6 +113,8 @@ export default function InputExpense({ onSubmit, loading, initialTransactions }:
                 value={jumlah}
                 onChange={(e) => setJumlah(e.target.value)}
                 className="w-full bg-slate-50 border-none rounded-xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all font-black text-lg text-on-surface outline-none"
+                required
+                min="1"
               />
             </div>
           </div>
@@ -137,7 +141,7 @@ export default function InputExpense({ onSubmit, loading, initialTransactions }:
         </div>
 
         <button 
-          onClick={handleSubmit}
+          type="submit"
           disabled={loading}
           className={cn(
             "w-full text-white py-5 rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3 uppercase tracking-widest",
@@ -147,7 +151,7 @@ export default function InputExpense({ onSubmit, loading, initialTransactions }:
           <Save size={20} />
           {loading ? 'Menyimpan...' : 'Simpan Transaksi'}
         </button>
-      </motion.div>
+      </motion.form>
 
       {/* Recent Activity Mini List */}
       <section className="space-y-4 text-left">

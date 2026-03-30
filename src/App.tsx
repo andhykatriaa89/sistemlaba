@@ -78,9 +78,12 @@ export default function App() {
       if (res.ok) {
         await fetchRiwayat();
         setActiveView('home');
+      } else {
+        alert('Gagal menyimpan transaksi. Pastikan koneksi dan backend Anda berjalan lancar.');
       }
     } catch (err) {
       console.error('Submission error:', err);
+      alert('Terjadi kesalahan sistem saat menyimpan transaksi.');
     } finally {
       setLoading(false);
     }
