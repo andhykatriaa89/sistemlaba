@@ -1,4 +1,4 @@
-import { TrendingUp, Receipt, Lightbulb, Search, Filter, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { TrendingUp, Receipt, Lightbulb, Search, Filter, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight, Trash2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
 import { Transaction, FinancialSummary } from '../types';
@@ -6,9 +6,10 @@ import { Transaction, FinancialSummary } from '../types';
 interface ReportsProps {
   transactions: Transaction[];
   summary: FinancialSummary;
+  onDelete?: (id: string) => void;
 }
 
-export default function Reports({ transactions, summary }: ReportsProps) {
+export default function Reports({ transactions, summary, onDelete }: ReportsProps) {
   function formatRp(n: number) {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -117,6 +118,7 @@ export default function Reports({ transactions, summary }: ReportsProps) {
                 <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-secondary/50">Kategori</th>
                 <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-secondary/50">Status</th>
                 <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-secondary/50 text-right">Jumlah</th>
+                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-secondary/50 text-center w-20">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
@@ -130,11 +132,12 @@ export default function Reports({ transactions, summary }: ReportsProps) {
                   status={tx.status === 'Success' ? 'Terbayar' : 'Tertunda'} 
                   amount={`${tx.type === 'income' ? '+' : '-'} ${tx.amount.toLocaleString('id-ID')}`} 
                   type={tx.type} 
+                  onDelete={() => onDelete && onDelete(tx.id)}
                 />
               ))}
               {transactions.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="py-20 text-center text-secondary italic font-medium">Belum ada data transaksi.</td>
+                  <td colSpan={6} className="py-20 text-center text-secondary italic font-medium">Belum ada data transaksi.</td>
                 </tr>
               )}
             </tbody>
@@ -172,7 +175,7 @@ export default function Reports({ transactions, summary }: ReportsProps) {
   );
 }
 
-function LedgerRow({ date, time, title, category, status, amount, type }: any) {
+function LedgerRow({ date, time, title, category, status, amount, type, onDelete }: any) {
   return (
     <tr className="hover:bg-slate-50 transition-colors group">
       <td className="px-8 py-6 text-left">
@@ -205,6 +208,13 @@ function LedgerRow({ date, time, title, category, status, amount, type }: any) {
       </td>
       <td className={cn("px-8 py-6 text-right font-black text-sm tracking-tight", type === 'income' ? "text-[#006948]" : "text-[#0b1c30]")}>
         {amount}
+      </td>
+      <td className="px-8 py-6 text-center">
+        {onDelete && (
+          <button onClick={onDelete} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer" title="Hapus">
+            <Trash2 size={16} />
+          </button>
+        )}
       </td>
     </tr>
   );

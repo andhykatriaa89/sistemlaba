@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Save, Package } from 'lucide-react';
+import { Save, Package, Trash2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
 import { Transaction } from '../types';
@@ -8,9 +8,10 @@ interface InputExpenseProps {
   onSubmit: (nama: string, jumlah: number, catatan: string, kategori: string, type: 'income'|'expense') => void;
   loading: boolean;
   initialTransactions: Transaction[];
+  onDelete?: (id: string) => void;
 }
 
-export default function InputExpense({ onSubmit, loading, initialTransactions }: InputExpenseProps) {
+export default function InputExpense({ onSubmit, loading, initialTransactions, onDelete }: InputExpenseProps) {
   const [nama, setNama] = useState('');
   const [jumlah, setJumlah] = useState('');
   const [catatan, setCatatan] = useState('');
@@ -165,7 +166,8 @@ export default function InputExpense({ onSubmit, loading, initialTransactions }:
               key={tx.id}
               title={tx.title} 
               meta={`${tx.category} • ${tx.date}`} 
-              amount={`-Rp ${tx.amount.toLocaleString('id-ID')}`} 
+              amount={`-Rp ${tx.amount.toLocaleString('id-ID')}`}
+              onDelete={() => onDelete && onDelete(tx.id)}
             />
           ))}
           {latestExpenses.length === 0 && (
@@ -177,11 +179,11 @@ export default function InputExpense({ onSubmit, loading, initialTransactions }:
   );
 }
 
-function RecentItem({ title, meta, amount }: { title: string, meta: string, amount: string }) {
+function RecentItem({ title, meta, amount, onDelete }: { title: string, meta: string, amount: string, onDelete?: () => void }) {
   return (
     <div className="bg-white p-4 rounded-2xl border border-slate-50 flex items-center justify-between group active:bg-slate-50 transition-colors shadow-sm">
       <div className="flex items-center gap-4">
-        <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary">
+        <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary group-hover:bg-primary/5 transition-colors">
           <Package size={18} />
         </div>
         <div className="text-left">
@@ -189,7 +191,14 @@ function RecentItem({ title, meta, amount }: { title: string, meta: string, amou
           <p className="text-[10px] text-secondary font-bold uppercase tracking-widest">{meta}</p>
         </div>
       </div>
-      <p className="font-black text-tertiary text-sm tracking-tight">{amount}</p>
+      <div className="flex items-center gap-3">
+        <p className="font-black text-tertiary text-sm tracking-tight">{amount}</p>
+        {onDelete && (
+          <button onClick={onDelete} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer" title="Hapus">
+            <Trash2 size={16} />
+          </button>
+        )}
+      </div>
     </div>
   );
 }

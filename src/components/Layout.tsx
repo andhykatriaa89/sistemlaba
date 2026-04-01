@@ -7,9 +7,12 @@ interface LayoutProps {
   children: React.ReactNode;
   activeView: ViewType;
   onViewChange: (view: ViewType) => void;
+  isOffline?: boolean;
+  pendingCount?: number;
+  onSync?: () => void;
 }
 
-export default function Layout({ children, activeView, onViewChange }: LayoutProps) {
+export default function Layout({ children, activeView, onViewChange, isOffline = false, pendingCount = 0, onSync }: LayoutProps) {
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-background">
       {/* Desktop Sidebar */}
@@ -68,6 +71,22 @@ export default function Layout({ children, activeView, onViewChange }: LayoutPro
               PL
             </div>
             <h1 className="text-lg font-bold tracking-tight">Sistem Laba</h1>
+            
+            {/* OFFLINE INDICATORS */}
+            {isOffline ? (
+              <span className="ml-2 px-2 py-1 bg-yellow-100 text-yellow-800 text-[10px] font-bold rounded-lg uppercase tracking-wider flex items-center gap-1 shadow-sm">
+                <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full animate-pulse"></span> Offline
+              </span>
+            ) : pendingCount > 0 ? (
+              <button 
+                onClick={onSync}
+                className="ml-2 px-3 py-1 bg-blue-600 text-white hover:bg-blue-700 transition-all shadow-md text-[10px] font-bold rounded-lg uppercase tracking-wider flex items-center gap-1.5 active:scale-95 cursor-pointer"
+              >
+                <span className="hidden sm:inline">Sync ke Database</span>
+                <span className="sm:hidden">Sync</span>
+                ({pendingCount})
+              </button>
+            ) : null}
           </div>
 
           <div className="flex items-center gap-4">
