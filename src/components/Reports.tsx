@@ -1,7 +1,13 @@
-import { TrendingUp, Receipt, Lightbulb, Search, Filter, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight, Trash2 } from 'lucide-react';
+import { TrendingUp, Receipt, Lightbulb, Search, Filter, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight, Trash2, Download } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
 import { Transaction, FinancialSummary } from '../types';
+import { useState } from 'react';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import { Capacitor } from '@capacitor/core';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
 
 interface ReportsProps {
   transactions: Transaction[];
@@ -10,6 +16,98 @@ interface ReportsProps {
 }
 
 export default function Reports({ transactions, summary, onDelete }: ReportsProps) {
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState(0);
+
+  const filterByTime = (txs: Transaction[]) => {
+    const now = new Date();
+    return txs.filter((tx) => {
+      const parts = tx.date.split(' ');
+      if (parts.length < 2) return true;
+
+      const months: Record<string, number> = {
+        Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+        Jul: 6, Agu: 7, Sep: 8, Okt: 9, Nov: 10, Des: 11
+      };
+      const day = parseInt(parts[0]);
+      const month = months[parts[1]] ?? now.getMonth();
+      const txDate = new Date(now.getFullYear(), month, day);
+
+      if (activeTab === 0) {
+        const weekAgo = new Date(now);
+        weekAgo.setDate(now.getDate() - 7);
+        return txDate >= weekAgo;
+      } else if (activeTab === 1) {
+        return txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear();
+      }
+      return txDate.getFullYear() == now.getFullYear();
+    });
+  };
+  const filteredTransactions = filterByTime(transactions).filter((tx) =>
+    tx.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    tx.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const exportToExcel = async () => {
+    const data: Record<string, string | number>[] = filteredTransactions.map((tx) => ({
+      Tanggal: tx.date,
+      Deskripsi: tx.title,
+      Kategori: tx.category,
+      Tipe: tx.type === 'income' ? 'Pemasukan' : 'Pengeluaran',
+      Status: tx.status,
+      Jumlah: tx.type === 'income' ? tx.amount : -tx.amount,
+    }));
+    data.push(
+      { Tanggal: '', Deskripsi: '', Kategori: '', Tipe: '', Status: '', Jumlah: 0 },
+      { Tanggal: '', Deskripsi: 'Total Pemasukan', Kategori: '', Tipe: '', Status: '', Jumlah: summary.totalRevenue },
+      { Tanggal: '', Deskripsi: 'Total Pengeluaran', Kategori: '', Tipe: '', Status: '', Jumlah: summary.totalCapital },
+      { Tanggal: '', Deskripsi: 'Laba Bersih', Kategori: '', Tipe: '', Status: '', Jumlah: summary.totalProfit },
+    );
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    ws['!cols'] = [
+      { wch: 12 },
+      { wch: 30 },
+      { wch: 15 },
+      { wch: 12 },
+      { wch: 10 },
+      { wch: 18 },
+    ];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Laporan Keuangan');
+
+    const tabLabels = ['Minggu_Ini', 'Bulan_Ini', 'Tahun_Ini'];
+    const fileName = `Laporan_Keuangan_${tabLabels[activeTab]}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+    if (Capacitor.isNativePlatform()) {
+      // Native (iOS / Android): tulis file ke cache lalu share
+      try {
+        const base64Data = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
+
+        const result = await Filesystem.writeFile({
+          path: fileName,
+          data: base64Data,
+          directory: Directory.Cache,
+        });
+
+        await Share.share({
+          title: 'Laporan Keuangan',
+          text: 'Export laporan keuangan dalam format Excel',
+          url: result.uri,
+          dialogTitle: 'Simpan atau Kirim Laporan',
+        });
+      } catch (err) {
+        console.error('Export error:', err);
+        alert('Gagal mengekspor file. Silakan coba lagi.');
+      }
+    } else {
+      // Web: gunakan file-saver seperti biasa
+      const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+      saveAs(blob, fileName);
+    }
+  };
   function formatRp(n: number) {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -37,9 +135,10 @@ export default function Reports({ transactions, summary, onDelete }: ReportsProp
           {['This Week', 'This Month', 'This Year'].map((tab, idx) => (
             <button
               key={tab}
+              onClick={() => setActiveTab(idx)}
               className={cn(
                 "px-6 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all",
-                idx === 0 ? "bg-[#006948] text-white shadow-lg shadow-primary/20" : "bg-white text-secondary hover:bg-slate-50 border border-slate-100"
+                activeTab === idx ? "bg-[#006948] text-white shadow-lg shadow-primary/20" : "bg-white text-secondary hover:bg-slate-50 border border-slate-100"
               )}
             >
               {tab}
@@ -97,14 +196,23 @@ export default function Reports({ transactions, summary, onDelete }: ReportsProp
           <div className="flex gap-3 w-full md:w-auto">
             <div className="relative flex-1 md:w-64">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="Cari transaksi..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 bg-slate-50 rounded-2xl text-[10px] font-bold uppercase tracking-widest border-none focus:ring-2 focus:ring-primary/10 transition-all outline-none"
               />
             </div>
             <button className="p-3 bg-slate-50 text-secondary rounded-2xl hover:bg-slate-100 transition-colors border border-slate-50">
               <Filter size={20} />
+            </button>
+            <button
+              onClick={exportToExcel}
+              className="flex items-center gap-2 px-5 py-3 bg-[#006948] text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#005a3d] transition-colors shadow-lg shadow-primary/20"
+            >
+              <Download size={16} />
+              Export
             </button>
           </div>
         </div>
@@ -122,20 +230,20 @@ export default function Reports({ transactions, summary, onDelete }: ReportsProp
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {transactions.map((tx) => (
-                <LedgerRow 
+              {filteredTransactions.map((tx) => (
+                <LedgerRow
                   key={tx.id}
-                  date={tx.date} 
-                  time="-" 
-                  title={tx.title} 
-                  category={tx.category} 
-                  status={tx.status === 'Success' ? 'Terbayar' : 'Tertunda'} 
-                  amount={`${tx.type === 'income' ? '+' : '-'} ${tx.amount.toLocaleString('id-ID')}`} 
-                  type={tx.type} 
+                  date={tx.date}
+                  time="-"
+                  title={tx.title}
+                  category={tx.category}
+                  status={tx.status === 'Success' ? 'Terbayar' : 'Tertunda'}
+                  amount={`${tx.type === 'income' ? '+' : '-'} ${tx.amount.toLocaleString('id-ID')}`}
+                  type={tx.type}
                   onDelete={() => onDelete && onDelete(tx.id)}
                 />
               ))}
-              {transactions.length === 0 && (
+              {filteredTransactions.length === 0 && (
                 <tr>
                   <td colSpan={6} className="py-20 text-center text-secondary italic font-medium">Belum ada data transaksi.</td>
                 </tr>
@@ -145,7 +253,7 @@ export default function Reports({ transactions, summary, onDelete }: ReportsProp
         </div>
 
         <div className="p-6 bg-slate-50/30 flex justify-between items-center text-left">
-          <p className="text-[10px] font-black text-secondary uppercase tracking-[0.15em]">Menampilkan {transactions.length} transaksi</p>
+          <p className="text-[10px] font-black text-secondary uppercase tracking-[0.15em]">Menampilkan {filteredTransactions.length} dari {transactions.length} transaksi</p>
           <div className="flex gap-2">
             <button className="p-2 bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-primary transition-colors shadow-sm">
               <ChevronLeft size={20} />

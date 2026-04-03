@@ -107,7 +107,7 @@ export default function App() {
 
   useEffect(() => {
     fetchRiwayat();
-    
+
     // Offline/Online Listeners
     const handleOnline = () => {
       setIsOffline(false);
@@ -172,12 +172,12 @@ export default function App() {
         date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }),
         status: 'Pending'
       };
-      
+
       const newTxs = [tempTx, ...transactions];
       setTransactions(newTxs);
       localStorage.setItem('cached_transactions', JSON.stringify(newTxs));
 
-      alert('Tersimpan di Gudang Kecil (Offline). Akan disinkronisasi ketika sinyal internet pulih!');
+      alert('Tersimpan (Offline). Akan disinkronisasi ketika sinyal internet pulih!');
       setActiveView('home');
     } finally {
       setLoading(false);
@@ -193,7 +193,7 @@ export default function App() {
       alert('Mode Offline Aktif! Anda membutuhkan koneksi internet untuk menghapus data dari Database.');
       return;
     }
-    
+
     if (window.confirm('Yakin ingin menghapus transaksi ini? Data tidak bisa dikembalikan.')) {
       setLoading(true);
       try {
