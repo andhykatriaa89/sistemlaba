@@ -4,6 +4,7 @@ import Dashboard from './components/Dashboard';
 import InputExpense from './components/InputExpense';
 import ProfitCalculator from './components/ProfitCalculator';
 import Reports from './components/Reports';
+import HppManager from './components/HppManager';
 import { ViewType, Transaction, FinancialSummary } from './types';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:8080';
@@ -20,6 +21,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [pendingCount, setPendingCount] = useState(0);
+  const [prefillHpp, setPrefillHpp] = useState<{ hpp: number; nama: string } | null>(null);
 
   // Load initial pending count
   useEffect(() => {
@@ -212,6 +214,11 @@ export default function App() {
     }
   };
 
+  const handleUseHpp = (hpp: number, nama: string) => {
+    setPrefillHpp({ hpp, nama });
+    setActiveView('calculator');
+  };
+
   const renderView = () => {
     switch (activeView) {
       case 'home':
@@ -219,9 +226,11 @@ export default function App() {
       case 'input':
         return <InputExpense onSubmit={handleSubmit} loading={loading} initialTransactions={transactions} onDelete={handleDelete} />;
       case 'calculator':
-        return <ProfitCalculator />;
+        return <ProfitCalculator initialHpp={prefillHpp?.hpp} hppName={prefillHpp?.nama} />;
       case 'reports':
         return <Reports transactions={transactions} summary={summary} onDelete={handleDelete} />;
+      case 'hpp':
+        return <HppManager onUseInCalculator={handleUseHpp} />;
       default:
         return <Dashboard transactions={transactions} summary={summary} onNavigate={setActiveView} />;
     }

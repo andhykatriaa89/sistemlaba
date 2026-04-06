@@ -1,13 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Calculator as CalcIcon, TrendingUp, Flag, Lightbulb, ArrowRight, Wallet } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
 
-export default function ProfitCalculator() {
+interface ProfitCalculatorProps {
+  initialHpp?: number;
+  hppName?: string;
+}
+
+export default function ProfitCalculator({ initialHpp, hppName }: ProfitCalculatorProps) {
   const [margin, setMargin] = useState(35);
-  const [biayaProduksi, setBiayaProduksi] = useState<number | string>(45000);
+  const [biayaProduksi, setBiayaProduksi] = useState<number | string>(initialHpp || 45000);
   const [biayaTetap, setBiayaTetap] = useState<number | string>(2500000);
   const [estimasiPenjualan, setEstimasiPenjualan] = useState<number | string>(300);
+
+  // Update biayaProduksi when initialHpp changes
+  useEffect(() => {
+    if (initialHpp) setBiayaProduksi(initialHpp);
+  }, [initialHpp]);
 
   // Dynamic calculations
   const numBiayaProduksi = Number(biayaProduksi) || 0;
@@ -52,7 +62,9 @@ export default function ProfitCalculator() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-secondary block">Biaya Produksi / Unit</label>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-secondary block">
+                  Biaya Produksi / Unit {hppName && <span className="text-primary normal-case">(dari HPP: {hppName})</span>}
+                </label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-on-surface">Rp</span>
                   <input
