@@ -1,4 +1,4 @@
-export type ViewType = 'home' | 'input' | 'calculator' | 'reports' | 'hpp';
+export type ViewType = 'home' | 'input' | 'calculator' | 'reports' | 'hpp' | 'fixed-costs';
 
 export interface Transaction {
   id: string;
@@ -30,6 +30,14 @@ export interface ResepItem {
   bahan_baku_id: string;
   bahan_baku?: BahanBaku;
   jumlah: number;
+}
+
+export interface BiayaTetap {
+  id: string;
+  nama: string;
+  kategori: string;
+  jumlah: number;
+  siklus: string;
 }
 
 export interface Produk {

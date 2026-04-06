@@ -6,18 +6,25 @@ import { cn } from '../lib/utils';
 interface ProfitCalculatorProps {
   initialHpp?: number;
   hppName?: string;
+  totalFixedCost?: number;
 }
 
-export default function ProfitCalculator({ initialHpp, hppName }: ProfitCalculatorProps) {
+export default function ProfitCalculator({ initialHpp, hppName, totalFixedCost }: ProfitCalculatorProps) {
   const [margin, setMargin] = useState(35);
   const [biayaProduksi, setBiayaProduksi] = useState<number | string>(initialHpp || 45000);
-  const [biayaTetap, setBiayaTetap] = useState<number | string>(2500000);
+  const [biayaTetap, setBiayaTetap] = useState<number | string>(totalFixedCost || 2500000);
   const [estimasiPenjualan, setEstimasiPenjualan] = useState<number | string>(300);
 
-  // Update biayaProduksi when initialHpp changes
+  // Update values when props change
   useEffect(() => {
     if (initialHpp) setBiayaProduksi(initialHpp);
   }, [initialHpp]);
+
+  useEffect(() => {
+    if (totalFixedCost !== undefined && totalFixedCost > 0) {
+      setBiayaTetap(totalFixedCost);
+    }
+  }, [totalFixedCost]);
 
   // Dynamic calculations
   const numBiayaProduksi = Number(biayaProduksi) || 0;
@@ -76,7 +83,9 @@ export default function ProfitCalculator({ initialHpp, hppName }: ProfitCalculat
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-secondary block">Biaya Tetap (Bln)</label>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-secondary block">
+                  Biaya Tetap (Bln) {totalFixedCost ? <span className="text-tertiary normal-case">(Auto-Sync Aktif)</span> : ""}
+                </label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-on-surface">Rp</span>
                   <input

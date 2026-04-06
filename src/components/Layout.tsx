@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, PlusCircle, Calculator, BarChart3, Bell, Settings, Package } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, Calculator, BarChart3, Bell, Settings, Package, Landmark } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { ViewType } from '../types';
 
@@ -57,6 +57,12 @@ export default function Layout({ children, activeView, onViewChange, isOffline =
             label="HPP Otomatis"
             active={activeView === 'hpp'}
             onClick={() => onViewChange('hpp')}
+          />
+          <NavItem
+            icon={<Landmark size={20} />}
+            label="Biaya Tetap"
+            active={activeView === 'fixed-costs'}
+            onClick={() => onViewChange('fixed-costs')}
           />
         </nav>
 
@@ -153,6 +159,12 @@ export default function Layout({ children, activeView, onViewChange, isOffline =
               label="HPP"
               active={activeView === 'hpp'}
               onClick={() => onViewChange('hpp')}
+            />
+            <MobileNavItem
+              icon={<Landmark size={20} />}
+              label="Biaya"
+              active={activeView === 'fixed-costs'}
+              onClick={() => onViewChange('fixed-costs')}
             />
           </div>
         </nav>
